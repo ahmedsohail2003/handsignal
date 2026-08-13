@@ -1,8 +1,51 @@
+import { useEffect, useRef } from 'react';
+
 interface AboutPanelProps {
   onClose: () => void;
 }
 
+const FOCUSABLE =
+  'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 export function AboutPanel({ onClose }: AboutPanelProps) {
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  // Tab focus trap: while the dialog is open, Tab cycles within it, and focus
+  // returns to wherever it was when the dialog closes. Esc is handled at the
+  // app level.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key !== 'Tab') return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const focusables = Array.from(
+        panel.querySelectorAll<HTMLElement>(FOCUSABLE),
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (!panel.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener('keydown', onKey, true);
+    return () => {
+      window.removeEventListener('keydown', onKey, true);
+      previouslyFocused?.focus();
+    };
+  }, []);
+
   return (
     <div
       className="about-backdrop"
@@ -10,7 +53,13 @@ export function AboutPanel({ onClose }: AboutPanelProps) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="about" role="dialog" aria-modal="true" aria-label="About this study">
+      <div
+        className="about"
+        role="dialog"
+        aria-modal="true"
+        aria-label="About this study"
+        ref={panelRef}
+      >
         <header>
           <h2>HandSignal — about this study</h2>
           <div className="spacer" />
@@ -75,10 +124,10 @@ export function AboutPanel({ onClose }: AboutPanelProps) {
               halts production, so it must cost more intent.
             </li>
             <li>
-              After a command fires, a refractory period plus a
-              release-before-repeat rule prevents machine-gun re-fires, while
-              a different gesture (for example STOP) can always interrupt
-              immediately.
+              After a command fires, the same gesture cannot fire again until
+              it has been released and its refractory period has elapsed —
+              no machine-gun re-fires — while a different gesture (for
+              example STOP) can always interrupt immediately.
             </li>
             <li>
               E-stop recovery is deliberately not gesture-driven: an

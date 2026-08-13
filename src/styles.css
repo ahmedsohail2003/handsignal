@@ -1,3 +1,18 @@
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/inter-var-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-var-latin.woff2') format('woff2');
+}
+
 :root {
   --bg: #0b0e14;
   --surface: #141926;
@@ -10,7 +25,6 @@
   --danger: #ef4444;
   --info: #60a5fa;
   --brand: #7dd3fc;
-  --charging: #a78bfa;
   --radius: 10px;
   --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -584,6 +598,17 @@ a:focus-visible {
   66%,
   100% {
     opacity: 0.15;
+  }
+}
+
+/* Reduced motion: hold the lockout indication steady instead of flashing. */
+@media (prefers-reduced-motion: reduce) {
+  .banner.flash {
+    animation: none;
+    background: rgba(239, 68, 68, 0.22);
+  }
+  .lamp.flashing .bulb {
+    animation: none;
   }
 }
 

@@ -176,6 +176,17 @@ describe('refractory period', () => {
     expect(ofType(events, 'fired')).toHaveLength(2);
   });
 
+  it('the same gesture cannot re-fire inside refractory after a brief release', () => {
+    const m = new GestureStateMachine(CFG);
+    const events = feed(m, 'Thumb_Up', 0.9, 0, 800); // fires ~728
+    events.push(...feed(m, null, 0, 816, 1016)); // ~200 ms release, well inside refractory
+    events.push(...feed(m, 'Thumb_Up', 0.9, 1032, 1900)); // re-presented before ~1928
+    expect(ofType(events, 'fired')).toHaveLength(1); // suppressed until refractory ends
+    events.push(...feed(m, null, 0, 1916, 2100)); // fresh release past refractory
+    events.push(...feed(m, 'Thumb_Up', 0.9, 2116, 3000));
+    expect(ofType(events, 'fired')).toHaveLength(2);
+  });
+
   it('a different gesture can arm during refractory (STOP is never delayed)', () => {
     const m = new GestureStateMachine(CFG);
     const events = feed(m, 'Thumb_Up', 0.9, 0, 736); // RESUME fires ~728

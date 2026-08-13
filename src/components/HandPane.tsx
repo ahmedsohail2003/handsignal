@@ -485,12 +485,20 @@ function CameraView({
           runningMode: 'VIDEO',
           numHands: 1,
         });
-        if (cancelled) return;
+        if (cancelled) {
+          // Unmounted mid-load: cleanup already ran, so close it here.
+          recognizer.close();
+          return;
+        }
         setStatus('Requesting camera…');
         stream = await navigator.mediaDevices.getUserMedia({
           video: { width: 960, height: 540 },
         });
-        if (cancelled) return;
+        if (cancelled) {
+          // Unmounted mid-request: stop the tracks or the webcam stays on.
+          stream.getTracks().forEach((tr) => tr.stop());
+          return;
+        }
         const video = videoRef.current;
         if (!video) return;
         video.srcObject = stream;

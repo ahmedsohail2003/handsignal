@@ -2,7 +2,7 @@
 
 **Crane hand signals as a safety command channel for a collaborative robot cell.**
 
-![HandSignal overview: guided demo running, simulated gesture input on the left, cobot cell simulation on the right](../screenshots/handsignal-overview.png)
+![HandSignal overview: guided demo running, simulated gesture input on the left, cobot cell simulation on the right](docs/img/handsignal-overview.png)
 
 On many industrial floors, the two default input channels fail exactly when
 they are needed most: hands are busy or gloved, so touchscreens and pendants
@@ -20,8 +20,9 @@ over-learned safety gesture in industry — so the prototype borrows an existing
 signal language rather than inventing one operators must memorize.
 
 Built with Vite + React + TypeScript. Gesture recognition runs on-device via
-MediaPipe's GestureRecognizer; a pure-TypeScript safety state machine (unit
-tested, 27 tests) sits between recognition and the cell.
+MediaPipe's GestureRecognizer; a pure-TypeScript safety state machine sits
+between recognition and the cell (28 unit tests across the state machine,
+cell simulation, and guided-demo script).
 
 ## Try it in 60 seconds
 
@@ -89,8 +90,9 @@ Design decisions worth defending in a crit:
   fixed 1.5 s hold — a false e-stop halts production, so it must cost more
   intent.
 - **Refractory is per-gesture, not global.** A held gesture fires exactly
-  once (release-before-repeat), but a *different* gesture can arm immediately
-  — a STOP is never queued behind a RESUME's refractory window.
+  once — repeating it requires the gesture to be released AND its refractory
+  period to elapse — but a *different* gesture can arm immediately — a STOP
+  is never queued behind a RESUME's refractory window.
 - **E-stop recovery is not gesture-driven.** Reset is a deliberate two-step
   act on the panel (reset, then confirm) and returns the cell only to IDLE — a
   fresh CYCLE START is required. A misread pose must never re-energize a
@@ -115,7 +117,7 @@ stateDiagram-v2
     ESTOPPED --> IDLE: two-step panel reset — never a gesture
 ```
 
-![STOP arming with the dwell ring just over half full while the cell runs](../screenshots/handsignal-armed.png)
+![STOP arming with the dwell ring just over half full while the cell runs](docs/img/handsignal-armed.png)
 
 ## Research question and measures
 
@@ -142,7 +144,7 @@ signal-detection framing where dwell trades hits against false alarms.
 **Status: [Evaluation designed; sessions pending].** No participants have been
 run and no findings exist; nothing in the prototype or this document reports
 study data. Full study design and rationale live in
-[`../case-studies/notes-handsignal.md`](../case-studies/notes-handsignal.md).
+[`docs/DESIGN-NOTES.md`](docs/DESIGN-NOTES.md).
 
 ## Honest limitations
 
@@ -167,14 +169,14 @@ study data. Full study design and rationale live in
   recorded. The MediaPipe runtime and model are fetched from the official CDN
   at the moment you opt in (the only network access the feature has).
 
-![Emergency stop engaged: flashing lockout banner and the two-step reset interlock](../screenshots/handsignal-estop.png)
+![Emergency stop engaged: flashing lockout banner and the two-step reset interlock](docs/img/handsignal-estop.png)
 
 ## Development
 
 ```bash
 npm install
 npm run dev        # development server
-npm test           # vitest — 27 tests: state machine, cell, demo script
+npm test           # vitest — 28 tests: state machine, cell, demo script
 npm run build      # type-check + production build
 npm run preview    # serve the production build
 ```

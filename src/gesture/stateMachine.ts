@@ -149,9 +149,9 @@ export class GestureStateMachine {
     return { ...this.cfg };
   }
 
-  /** Adjust the normal-command dwell (bounded). E-stop dwell stays fixed. */
+  /** Adjust the normal-command dwell (bounded below the fixed e-stop dwell). */
   setDwellMs(ms: number): void {
-    this.cfg.dwellMs = Math.min(2000, Math.max(200, ms));
+    this.cfg.dwellMs = Math.min(1200, Math.max(200, ms));
   }
 
   private requiredDwell(label: GestureLabel): number {
@@ -185,7 +185,10 @@ export class GestureStateMachine {
     if (this.holdLock !== null) {
       if (eff === this.holdLock) {
         this.holdLockLastSeen = t;
-      } else if (t - this.holdLockLastSeen > cfg.lossGraceMs) {
+      } else if (
+        t - this.holdLockLastSeen > cfg.lossGraceMs &&
+        t >= this.refractoryUntil
+      ) {
         this.holdLock = null;
       }
       if (this.holdLock !== null && eff === this.holdLock) {

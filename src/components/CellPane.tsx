@@ -81,7 +81,7 @@ export function CellPane(props: CellPaneProps) {
         <CellCanvas cellRef={props.cellRef} />
         <Andon state={cellState} />
         {cellState === 'ESTOPPED' && (
-          <div className="estop-panel" role="alertdialog" aria-label="E-stop reset">
+          <div className="estop-panel" role="alert" aria-label="E-stop reset">
             <div className="estop-title">EMERGENCY STOP ACTIVE</div>
             <p>
               Recovery is deliberately not gesture-driven: a misread hand pose
