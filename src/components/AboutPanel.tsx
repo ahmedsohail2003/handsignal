@@ -1,0 +1,128 @@
+interface AboutPanelProps {
+  onClose: () => void;
+}
+
+export function AboutPanel({ onClose }: AboutPanelProps) {
+  return (
+    <div
+      className="about-backdrop"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="about" role="dialog" aria-modal="true" aria-label="About this study">
+        <header>
+          <h2>HandSignal — about this study</h2>
+          <div className="spacer" />
+          <button type="button" onClick={onClose} autoFocus>
+            Close
+          </button>
+        </header>
+
+        <section>
+          <h3>Research question</h3>
+          <p>
+            Can a standardized industrial hand-signal vocabulary serve as a
+            reliable, learnable command channel for cobot cells, and what
+            dwell time best trades false activations against responsiveness?
+          </p>
+        </section>
+
+        <section>
+          <h3>Why crane signals</h3>
+          <p>
+            Signalperson hand signals (ASME B30.5) are a real, learned,
+            safety-critical gesture language already used on industrial
+            floors. That matters for three reasons: many operators arrive with
+            pre-existing floor literacy in the vocabulary; gestures need no
+            wake word and work at a distance; and they survive environments
+            where hands are busy, gloves are on, and hearing protection makes
+            voice unreliable.
+          </p>
+        </section>
+
+        <section>
+          <h3>Honest adaptation note</h3>
+          <p>
+            This prototype recognizes MediaPipe&apos;s canonical single-hand
+            static poses, which constrains the vocabulary. Only the open-palm
+            STOP closely matches its crane counterpart. The other four
+            mappings are adaptations of the crane vocabulary&apos;s semantics
+            to camera-recognizable poses, and they are labeled as adaptations
+            in the legend: closed fist held 1.5 s adapts &quot;dog
+            everything&quot; to an emergency stop; index-up adapts the
+            &quot;move slowly&quot; modifier; thumb-up and the V sign have no
+            B30.5 equivalent. A production system would train recognizers on
+            the actual dynamic B30.5 signals.
+          </p>
+        </section>
+
+        <section>
+          <h3>Interaction safeguards</h3>
+          <ul>
+            <li>
+              Debounce (120 ms) filters classifier flicker before a gesture is
+              treated as a candidate.
+            </li>
+            <li>
+              Dwell-time arming (default 600 ms, adjustable 300–1200 ms) shows
+              a filling ring, so a command is a deliberate hold, never a
+              passing pose. The dwell slider exists precisely because the
+              study&apos;s core question is where this parameter should sit.
+            </li>
+            <li>
+              Emergency stop requires a longer 1.5 s hold: a false e-stop
+              halts production, so it must cost more intent.
+            </li>
+            <li>
+              After a command fires, a refractory period plus a
+              release-before-repeat rule prevents machine-gun re-fires, while
+              a different gesture (for example STOP) can always interrupt
+              immediately.
+            </li>
+            <li>
+              E-stop recovery is deliberately not gesture-driven: an
+              on-screen two-step reset returns the cell only to IDLE.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>What is simulated</h3>
+          <ul>
+            <li>
+              The cobot cell is a 2D kinematic cartoon (keyframed Cartesian
+              path with 2-link inverse kinematics), not a physical or
+              physics-simulated robot.
+            </li>
+            <li>
+              Simulated-input mode injects synthetic gesture classifications
+              from keys 1–5 with an adjustable synthetic confidence. It is
+              labeled in the UI, and every downstream stage — state machine,
+              cell commands, logging — is identical for real and simulated
+              input.
+            </li>
+            <li>
+              Camera mode, where available, runs MediaPipe&apos;s
+              GestureRecognizer with the official hosted model. No gesture
+              data leaves the browser.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Evaluation status</h3>
+          <p>
+            <span className="status-tag">[Evaluation designed; sessions pending]</span>{' '}
+            <span className="dim">
+              The session log (raw detections, armed events, fired commands,
+              false starts, dwell-to-fire latency) defines the dependent
+              measures for a within-subjects dwell-time study. No participant
+              data has been collected; nothing shown here is a study result.
+            </span>
+          </p>
+        </section>
+      </div>
+    </div>
+  );
+}
