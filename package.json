@@ -6,6 +6,10 @@
   "description": "Gesture-based safety-command prototype for a collaborative robot cell, grounded in ASME B30.5 crane hand-signal vocabulary.",
   "author": "Ahmed Sohail Butt",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahmedsohail2003/handsignal.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
