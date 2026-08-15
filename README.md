@@ -2,6 +2,8 @@
 
 **Crane hand signals as a safety command channel for a collaborative robot cell.**
 
+[![CI](https://github.com/ahmedsohail2003/handsignal/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedsohail2003/handsignal/actions/workflows/ci.yml)
+
 ![HandSignal overview: guided demo running, simulated gesture input on the left, cobot cell simulation on the right](docs/img/handsignal-overview.png)
 
 On many industrial floors, the two default input channels fail exactly when
